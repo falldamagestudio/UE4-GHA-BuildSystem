@@ -1,0 +1,13 @@
+
+# Ignore any local Terraform cache folders
+
+.terraform
+
+# Ignore any local Terraform state files
+
+*.tfstate
+*.tfstate.*
+
+# Ignore any local Terraform pre-defined variable files
+
+*.tfvars
