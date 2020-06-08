@@ -1,6 +1,6 @@
 
-module "ue4-gha-build-agent" {
-    source = "../ue4-build-agent"
+module "ue4_gha_build_agent" {
+    source = "../ue4_build_agent"
 
     name = var.name
     project_id = var.project_id
