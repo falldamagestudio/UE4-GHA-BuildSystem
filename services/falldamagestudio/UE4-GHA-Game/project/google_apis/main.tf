@@ -1,13 +1,7 @@
-provider "google" {
-
-  version = "~> 3.0"
-
-  project = var.project_id
-}
-
 locals {
   google_apis = [
-    "iap.googleapis.com"
+    "iap.googleapis.com",
+    "compute.googleapis.com"
   ]
 }
 
