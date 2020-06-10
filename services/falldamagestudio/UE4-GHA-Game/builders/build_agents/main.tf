@@ -1,11 +1,11 @@
 module "build_agent" {
-  source = "../../../../../modules/ue4_gha_build_agent"
-  name = "build_agent"
-  image = "packer-1591213387"
-  machine_type = "n1-standard-4"
-  boot_disk_size = 200
+  source         = "../../../../../modules/ue4_gha_build_agent"
+  name           = "build-agent"
+  image          = var.image
+  machine_type   = var.machine_type
+  boot_disk_size = var.boot_disk_size
 
   github_scope = var.github_scope
-  github_pat = var.github_pat
-  runner_name = "build_agent"
+  github_pat   = var.github_pat
+  runner_name  = "build_agent"
 }

@@ -36,6 +36,10 @@ module "build_agent_access_to_storage" {
 module "build_agents" {
   source = "./build_agents"
 
+  image          = var.image
+  machine_type   = var.machine_type
+  boot_disk_size = var.boot_disk_size
+
   github_scope = var.github_scope
   github_pat   = var.github_pat
 }
