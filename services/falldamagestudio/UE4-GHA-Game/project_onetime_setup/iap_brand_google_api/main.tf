@@ -1,5 +1,6 @@
 locals {
   google_apis = [
+    "iap.googleapis.com",
     "compute.googleapis.com"
   ]
 }
