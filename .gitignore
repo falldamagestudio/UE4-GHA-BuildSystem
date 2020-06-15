@@ -11,3 +11,7 @@
 # Ignore any local Terraform pre-defined variable files
 
 *.tfvars
+
+# Ignore any Google Cloud credentials file
+
+application-default-credentials.json
