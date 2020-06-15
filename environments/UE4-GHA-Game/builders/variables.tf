@@ -3,6 +3,7 @@ variable "github_scope" {
 }
 
 variable "github_pat" {
+  description = "Personal Access Token used to access game's GitHub repository (sensitive)"
   type = string
 }
 
