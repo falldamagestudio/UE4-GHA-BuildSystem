@@ -57,6 +57,7 @@ You will likely do this setup once, for the grand game
 ## Terraform setup
 
 * Check out your game's infrastructure repository.
+* Install terraform-config-inspect by running `go get github.com/kiranjthomas/terraform-config-inspect`
 * Enter the `environment` folder and run `powershell .\New-TFVarsFiles.ps1 -TerraformOrganization <your Terraform Cloud organization name> -GitHubRepository <your GitHub repository name>`. This will create a terraform.tfvars file
   in each of `environment/project`, `environment/storage` and `environment/builders`.
 * Edit the `**/terraform.tfvars` files, and ensure that all elements have up-to-date names. Important items:
