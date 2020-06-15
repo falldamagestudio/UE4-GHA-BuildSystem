@@ -6,10 +6,13 @@ provider "google" {
 }
 
 data "terraform_remote_state" "project" {
-  backend = "local"
+  backend = "remote"
 
   config = {
-    path = "../project/terraform.tfstate"
+    organization = var.terraform_cloud_organization
+    workspaces = {
+      name = "${var.terraform_cloud_workspace_prefix}-project"
+    }
   }
 }
 
