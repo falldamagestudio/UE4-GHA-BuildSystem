@@ -1,5 +1,5 @@
 module "build_agent" {
-  source         = "../../../../modules/ue4_gha_build_agent"
+  source         = "../../../modules/ue4_gha_build_agent"
   name           = "build-agent"
   image          = var.image
   machine_type   = var.machine_type
