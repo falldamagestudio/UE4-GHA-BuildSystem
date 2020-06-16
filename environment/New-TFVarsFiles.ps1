@@ -5,7 +5,7 @@ param (
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-. $here\..\..\scripts\Get-TerraformVariablesFromConfig.ps1
+. $here\..\scripts\Get-TerraformVariablesFromConfig.ps1
 
 function CreateTFVarsFile {
 

@@ -6,8 +6,8 @@ param (
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-. $here\..\..\scripts\Get-TerraformCloudWorkspaceId.ps1
-. $here\..\..\scripts\Remove-TerraformCloudWorkspace.ps1
+. $here\..\scripts\Get-TerraformCloudWorkspaceId.ps1
+. $here\..\scripts\Remove-TerraformCloudWorkspace.ps1
 
 function RemoveWorkspace {
 

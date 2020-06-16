@@ -8,12 +8,12 @@ param (
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-. $here\..\..\scripts\Get-VCSProviderAuthTokenId.ps1
-. $here\..\..\scripts\Get-TerraformVariableValuesFromTFVars.ps1
-. $here\..\..\scripts\Get-TerraformVariablesFromConfig.ps1
-. $here\..\..\scripts\New-TerraformCloudWorkspace.ps1
-. $here\..\..\scripts\Set-TerraformCloudWorkspaceVariable.ps1
-. $here\..\..\scripts\Set-TerraformCloudWorkspaceVariables.ps1
+. $here\..\scripts\Get-VCSProviderAuthTokenId.ps1
+. $here\..\scripts\Get-TerraformVariableValuesFromTFVars.ps1
+. $here\..\scripts\Get-TerraformVariablesFromConfig.ps1
+. $here\..\scripts\New-TerraformCloudWorkspace.ps1
+. $here\..\scripts\Set-TerraformCloudWorkspaceVariable.ps1
+. $here\..\scripts\Set-TerraformCloudWorkspaceVariables.ps1
 
 function SetupWorkspace {
 
@@ -69,7 +69,7 @@ function SetupWorkspace {
 
 $GitHubAuthTokenId = Get-VCSProviderAuthTokenId -TerraformOrganization $TerraformOrganization -TerraformAuthToken $TerraformAuthToken -VCSProvider $VCSProvider
 
-$WorkingDirectoryBase = "services"
+$WorkingDirectoryBase = "environment"
 $TerraformVersion = "0.12.26"
 
 SetupWorkspace -Terraservice "project"
