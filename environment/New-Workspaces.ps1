@@ -9,6 +9,7 @@ param (
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 . $here\..\scripts\Get-VCSProviderAuthTokenId.ps1
+. $here\..\scripts\Get-TerraformCloudWorkspaceId.ps1
 . $here\..\scripts\Get-TerraformVariableValuesFromTFVars.ps1
 . $here\..\scripts\Get-TerraformVariablesFromConfig.ps1
 . $here\..\scripts\New-TerraformCloudWorkspace.ps1
