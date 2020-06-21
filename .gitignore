@@ -12,6 +12,10 @@
 
 *.tfvars
 
+# Ignore any local crash logs
+
+crash.log
+
 # Ignore any Google Cloud credentials file
 
 application-default-credentials.json
