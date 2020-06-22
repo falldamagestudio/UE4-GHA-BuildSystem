@@ -36,6 +36,10 @@ You will likely do this setup once, for the grand game
 * Create a bucket for state storage within the new project. Name it according to the project name, suffixed with `-state`
 * Enable versioning for the bucket.
 
+* Add a new Service Account to the project. Grant it the Project Editor role.
+* Create a new key for the account (JSON format).
+* Add a new secret to the GitHub repository; name = GCP_SERVICE_ACCOUNT_CREDENTIALS, with contents from the key file
+
 ## Create build agent image
 
 * Check out the [UE4-GHA-BuildAgent](https://github.com/falldamagestudio.com/UE4-GHA-BuildAgent) repository.
