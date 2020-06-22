@@ -61,6 +61,8 @@ You will likely do this setup once, for the grand game
 * If you are testing locally, add a secret to a 
 ** `.../builders/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
 
+* If you will let GitHub Actions run deployment, add a secret called `TF_VAR_github_pat` with the corresponding setting to the repository
+
 * Commit the changes
 
 ## Bring up the infrastructure
