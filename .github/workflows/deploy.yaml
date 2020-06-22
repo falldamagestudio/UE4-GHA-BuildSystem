@@ -38,6 +38,8 @@ jobs:
       image: ${{ steps.build_image.outputs.image_name }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
 
       - name: "Build image"
         id: build_image
