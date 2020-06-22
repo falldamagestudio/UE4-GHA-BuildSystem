@@ -23,4 +23,4 @@ jobs:
         run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
       - name: "Deploy builders"
-        run: (TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply)
+        run: export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
