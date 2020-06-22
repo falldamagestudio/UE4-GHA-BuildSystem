@@ -16,6 +16,11 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
 
+      - name: debug logging
+        run: |
+          echo $TF_INPUT
+          echo $TF_IN_AUTOMATION
+
       - name: "Deploy project"
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
