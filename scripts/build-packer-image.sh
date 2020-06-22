@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Usage: build-packer-image.sh <config file> <packer script folder> <output image name>"
 	exit 1
 fi
