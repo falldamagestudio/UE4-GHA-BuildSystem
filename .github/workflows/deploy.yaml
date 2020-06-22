@@ -6,7 +6,7 @@ on:
 env:
   TF_IN_AUTOMATION: 1
   TF_INPUT: 0
-  GOOGLE_APPLICATION_CREDENTIALS: application-default-credentials.json
+  GOOGLE_APPLICATION_CREDENTIALS: ~/application-default-credentials.json
 
 jobs:
   deploy:
