@@ -45,8 +45,8 @@ jobs:
         id: build_image
         run: |
 
-          BUILD_AGENT_CONFIG_FILE=${{ github.repository }}/configurations/${{ github.repository }}/build-agent-image/vars.json
-          BUILD_AGENT_LOCATION=${{ github.repository }}/submodules/UE4-GHA-BuildAgent
+          BUILD_AGENT_CONFIG_FILE=${{ github.workspace }}/configurations/${{ github.repository }}/build-agent-image/vars.json
+          BUILD_AGENT_LOCATION=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent
 
           IMAGE_NAME=build-agent-`cd ${BUILD_AGENT_LOCATION} && git rev-parse --short HEAD`
 
