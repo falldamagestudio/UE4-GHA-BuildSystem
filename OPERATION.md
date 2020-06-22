@@ -7,24 +7,9 @@
 * Create a user and an organization in Google Cloud Platform.
 * Set up a billing account for your organization. Provide credit card information.
 
-## Terraform Cloud setup, for your company
-
-* Create an email account for Terraform Cloud automation.
-* Create a GitHub account for Terraform Cloud automation. Link it to the email account that you created.
+## GitHub setup, for your company
 
 * Create a GitHub organization for your company.
-* While logged in as the GitHub account for Terraform Cloud automation, on GitHub, visit the Application settings for the Terraform Cloud OAuth application. Request for the application to be able to access your GitHub organization. Accept the request (someone will receive an email about this).
-
-* Create a personal Terraform Cloud account.
-* Create an organization for your company in Terraform Cloud.
-* Add a VCS provider to your company's organization in Terraform Cloud. Connect it to GitHub, via the Terraform Cloud automation account.
-
-## Terraform Cloud setup, for yourself
-
-* Create an organization for your personal use in Terraform Cloud. (Name it after your GitHub user name, if that is available)
-* Add a VCS provider to your personal organization in Terraform Cloud. Connect it to GitHub, via your personal GitHub account.
-
-* Create a Terraform Cloud API token for yourself
 
 ---
 
@@ -33,7 +18,6 @@
 ## GitHub repository setup
 
 * Fork (if you want it public) or [Import](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) (if you want it private) this repository to your company's GitHub organization, renaming it to "<your game>-Infrastructure".
-* Invite the Terraform Cloud automation account to your company's version of this GitHub repository. Give the invite "Admin" rights.
 
 ### Setup per user
 
@@ -49,6 +33,9 @@ You will likely do this setup once, for the grand game
 * Visit APIs & Services | OAuth consent screen. Set up an Internal screen. [TODO: what name?]
 * Enable the Cloud Resource Manager API for your project: https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com
 
+* Create a bucket for state storage within the new project. Name it according to the project name, suffixed with `-state`
+* Enable versioning for the bucket.
+
 ## Create build agent image
 
 * Check out the [UE4-GHA-BuildAgent](https://github.com/falldamagestudio.com/UE4-GHA-BuildAgent) repository.
@@ -57,33 +44,35 @@ You will likely do this setup once, for the grand game
 ## Terraform setup
 
 * Check out your game's infrastructure repository.
-* Install terraform-config-inspect by running `go get github.com/kiranjthomas/terraform-config-inspect`
-* Enter the `environment` folder and run `powershell .\New-TFVarsFiles.ps1 -TerraformOrganization <your Terraform Cloud organization name> -GitHubRepository <your GitHub repository name>`. This will create a terraform.tfvars file
-  in each of `environment/project`, `environment/storage` and `environment/builders`.
-* Edit the `**/terraform.tfvars` files, and ensure that all elements have up-to-date names. Important items:
-** `environment/project/terraform.tfvars:project_id` - Google Cloud project ID
-** `environment/project/terraform.tfvars:region` - region where region-bound Google Cloud resources will be created
-** `environment/project/terraform.tfvars:zone` - zone where zone-bound Google Cloud resources will be created
-** `environment/storage/terraform.tfvars:name` - name of the Google Cloud Storage bucket that will hold all build results
-** `environment/builders/terraform.tfvars:github_scope` - org/repo name for the game project
-** `environment/builders/terraform.tfvars:github_pat` - Personal Access Token that grants access to the game project
-** `environment/builders/terraform.tfvars:image` - name of the build agent's VM image
-** `environment/builders/terraform.tfvars:machine_type` - build machine type
-** `environment/builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
-* Run `powershell .\New-Workspaces.ps1 -TerraformOrganization <your Terraform Cloud organization name> -TerraformAuthToken <API Token> -VCSProvider <Name of your VCS Provider> -GitHubOrganization <GitHub organization name> -GitHubRepository <GitHub repository name>`. This will create workspaces within Terraform Cloud.
+* Duplicate `configurations/falldamagestudio/UE4-GHA-Infrastructure` and name the folder `configurations/<org>/<repo>`, according to your git repo name
+* Modify `configurations/<org>/<repo>/backend.hcl` to point to the state bucket
+* Modify all `configurations/<org>/<repo>/*/terraform.tfvars` files, and ensure that all elements have up-to-date names. Important items:
+** `.../project/terraform.tfvars:project_id` - Google Cloud project ID
+** `.../project/terraform.tfvars:region` - region where region-bound Google Cloud resources will be created
+** `.../project/terraform.tfvars:zone` - zone where zone-bound Google Cloud resources will be created
+** `.../storage/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../storage/terraform.tfvars:name` - Name of longtail bucket
+** `.../builders/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../builders/terraform.tfvars:github_scope` - org/repo name for the game project
+** `.../builders/terraform.tfvars:image` - name of the build agent's VM image
+** `.../builders/terraform.tfvars:machine_type` - build machine type
+** `.../builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
+
+* If you are testing locally, add a secret to a 
+** `.../builders/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
+
+* Commit the changes
 
 ## Bring up the infrastructure
 
-* Visit the Terraform Cloud console. Plan & apply the workspaces in the following order:
-** Project
-** Storage
-** Builders
+* Let GitHub Actions do its thing, or run it yourself:
+
+* `(cd environments/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd environments/<org>/<repo>/storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd environments/<org>/<repo>/builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 
 ## Tear down the infrastructure
 
-* Visit the Terraform Cloud console. Queue for destruction (plan & apply) in the following order:
-** Builders
-** Storage
-** Project
-
-* Delete each of the workspaces
+* `(cd environments/<org>/<repo>/builders && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd environments/<org>/<repo>/storage && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd environments/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform destroy)`
