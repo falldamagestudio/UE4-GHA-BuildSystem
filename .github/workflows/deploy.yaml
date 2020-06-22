@@ -53,7 +53,7 @@ jobs:
           echo $GOOGLE_CREDENTIALS > ${BUILD_AGENT_LOCATION}/application-default-credentials.json 
           export GOOGLE_APPLICATION_CREDENTIALS=${BUILD_AGENT_LOCATION}/application_default_credentials.json
 
-          scripts/build-packer-image.sh $BUILD_AGENT_CONFIG_FILE} ${BUILD_AGENT_LOCATION} ${IMAGE_NAME}
+          scripts/build-packer-image.sh ${BUILD_AGENT_CONFIG_FILE} ${BUILD_AGENT_LOCATION} ${IMAGE_NAME}
           
           echo  "::set-output name=image_name::${IMAGE_NAME}"
 
