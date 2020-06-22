@@ -21,7 +21,7 @@ jobs:
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
   deploy_storage:
-    depends-on: [ deploy_project ]
+    needs: [ deploy_project ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
         run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
   build_buildagent_image:
-    depends-on: [ deploy_project ]
+    needs: [ deploy_project ]
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.build_image.outputs.image_name }}
@@ -56,7 +56,7 @@ jobs:
           echo  "::set-output name=image_name::${IMAGE_NAME}"
 
   deploy_builders:
-    depends-on: [ deploy_storage, build_buildagent_image ]
+    needs: [ deploy_storage, build_buildagent_image ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
