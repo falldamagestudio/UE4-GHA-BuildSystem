@@ -6,7 +6,6 @@ on:
 env:
   TF_IN_AUTOMATION: 1
   TF_INPUT: 0
-  GOOGLE_APPLICATION_CREDENTIALS: ~/application-default-credentials.json
 
 jobs:
   deploy:
@@ -17,7 +16,9 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
 
       - name: "Prepare Google application credentials"
-        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}" >> $GOOGLE_APPLICATION_CREDENTIALS
+        run: |
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}" >> ${{ github.workspace }}/application-default-credentials.json
+          echo "::set-env name=GOOGLE_APPLICATION_CREDENTIALS::${{ github.workspace }}/application-default-credentials.json"
 
       - name: "Deploy project"
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
