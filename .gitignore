@@ -8,9 +8,9 @@
 *.tfstate
 *.tfstate.*
 
-# Ignore any local Terraform pre-defined variable files
+# Ignore any local per-user Terraform pre-defined variable files
 
-*.tfvars
+user.auto.tfvars
 
 # Ignore any local crash logs
 

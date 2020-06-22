@@ -1,10 +1,14 @@
+variable "terraform_state_bucket" {
+  type = string
+}
+
 variable "github_scope" {
   type = string
 }
 
 variable "github_pat" {
   description = "Personal Access Token used to access game's GitHub repository (sensitive)"
-  type = string
+  type        = string
 }
 
 variable "image" {
@@ -20,8 +24,4 @@ variable "machine_type" {
 variable "boot_disk_size" {
   type    = number
   default = 200
-}
-
-variable "storage_bucket_id" {
-  type = string
 }
