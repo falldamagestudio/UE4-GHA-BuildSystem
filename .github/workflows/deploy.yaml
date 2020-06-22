@@ -17,7 +17,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
 
       - name: "Prepare Google application credentials"
-        run: echo ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }} >> $GOOGLE_APPLICATION_CREDENTIALS
+        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}" >> $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: "Deploy project"
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
