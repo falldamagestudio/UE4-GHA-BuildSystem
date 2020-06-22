@@ -64,4 +64,4 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
 
       - name: "Deploy builders"
-        run: export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; export TF_VAR_image=${{ build_buildagent_image.outputs.image }} cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+        run: export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }} cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
