@@ -41,6 +41,12 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: "Setup gcloud"
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
+          export_default_credentials: true
+
       - name: "Build image"
         id: build_image
         run: |
@@ -49,9 +55,6 @@ jobs:
           BUILD_AGENT_LOCATION=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent
 
           IMAGE_NAME=build-agent-`cd ${BUILD_AGENT_LOCATION} && git rev-parse --short HEAD`
-
-          echo $GOOGLE_CREDENTIALS > ${BUILD_AGENT_LOCATION}/application-default-credentials.json 
-          export GOOGLE_APPLICATION_CREDENTIALS=${BUILD_AGENT_LOCATION}/application_default_credentials.json
 
           scripts/build-packer-image.sh ${BUILD_AGENT_CONFIG_FILE} ${BUILD_AGENT_LOCATION} ${IMAGE_NAME}
           
