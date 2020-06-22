@@ -3,6 +3,11 @@ on:
     branches:
       - '**'
 
+env:
+  TF_IN_AUTOMATION: 1
+  TF_INPUT: 0
+  APPLICATION_DEFAULT_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,10 +17,10 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
 
       - name: "Deploy project"
-        run: (TF_IN_AUTOMATION=1; TF_INPUT=0; APPLICATION_DEFAULT_CREDENTIALS=${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}; cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply)
+        run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
       - name: "Deploy storage"
-        run: (TF_IN_AUTOMATION=1; TF_INPUT=0; APPLICATION_DEFAULT_CREDENTIALS=${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}; cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply)
+        run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
       - name: "Deploy builders"
-        run: (TF_IN_AUTOMATION=1; TF_INPUT=0; TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; APPLICATION_DEFAULT_CREDENTIALS=${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}; cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply)
+        run: (TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply)
