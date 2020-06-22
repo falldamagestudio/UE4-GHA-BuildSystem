@@ -10,7 +10,7 @@ env:
   GOOGLE_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
 
 jobs:
-  deploy:
+  deploy_project:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,8 +20,48 @@ jobs:
       - name: "Deploy project"
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
+  deploy_storage:
+    depends-on: [ deploy_project ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+
       - name: "Deploy storage"
         run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
+  build_buildagent_image:
+    depends-on: [ deploy_project ]
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build_image.outputs.image_name }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Build image"
+        id: build_image
+        run: |
+
+          BUILD_AGENT_CONFIG_FILE=${{ github.repository }}/configurations/${{ github.repository }}/build-agent-image/vars.json
+          BUILD_AGENT_LOCATION=${{ github.repository }}/submodules/UE4-GHA-BuildAgent
+
+          IMAGE_NAME=build-agent-`cd ${BUILD_AGENT_LOCATION} && git rev-parse --short HEAD`
+
+          echo $GOOGLE_CREDENTIALS > ${BUILD_AGENT_LOCATION}/application-default-credentials.json 
+          export GOOGLE_APPLICATION_CREDENTIALS=${BUILD_AGENT_LOCATION}/application_default_credentials.json
+
+          scripts/build-packer-image.sh $BUILD_AGENT_CONFIG_FILE} ${BUILD_AGENT_LOCATION} ${IMAGE_NAME}
+          
+          echo  "::set-output name=image_name::${IMAGE_NAME}"
+
+  deploy_builders:
+    depends-on: [ deploy_storage, build_buildagent_image ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+
       - name: "Deploy builders"
-        run: export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+        run: export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}; export TF_VAR_image=${{ build_buildagent_image.outputs.image }} cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply

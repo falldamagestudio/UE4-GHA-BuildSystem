@@ -1,0 +1,3 @@
+[submodule "submodules/UE4-GHA-BuildAgent"]
+	path = submodules/UE4-GHA-BuildAgent
+	url = https://github.com/Kalmalyzer/UE4-GHA-BuildAgent

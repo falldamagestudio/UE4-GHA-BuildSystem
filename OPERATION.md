@@ -58,8 +58,9 @@ You will likely do this setup once, for the grand game
 ** `.../builders/terraform.tfvars:machine_type` - build machine type
 ** `.../builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
 
-* If you are testing locally, add a secret to a 
+* If you are testing locally, add details to
 ** `.../builders/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
+** `.../builders/user.auto.tfvars:image` - VM image name to be used for builders
 
 * If you will let GitHub Actions run deployment, add a secret called `TF_VAR_github_pat` with the corresponding setting to the repository
 
