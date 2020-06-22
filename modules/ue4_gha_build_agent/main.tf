@@ -7,6 +7,7 @@ module "ue4_gha_build_agent" {
     zone = var.zone
     image = var.image
     boot_disk_size = var.boot_disk_size
+    machine_type = var.machine_type
 
     metadata = {
         github-scope = var.github_scope
