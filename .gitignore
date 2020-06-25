@@ -19,3 +19,7 @@ crash.log
 # Ignore any Google Cloud credentials file
 
 application-default-credentials.json
+
+# Ignore zipped archives with source code (these are created during deployment of Google Cloud Functions)
+
+*_cloud_function_source.zip

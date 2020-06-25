@@ -1,8 +1,8 @@
 locals {
   google_apis = [
     "iam.googleapis.com",
-    "compute.googleapis.com",
-	"cloudbuild.googleapis.com",
+  "cloudfunctions.googleapis.com",
+  "compute.googleapis.com",
 	"run.googleapis.com"
   ]
 }
