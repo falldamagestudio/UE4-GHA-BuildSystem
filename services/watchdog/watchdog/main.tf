@@ -15,7 +15,7 @@ resource "google_storage_bucket" "cloud_function_source_bucket" {
 
 # Upload the cloud function's source code to the storage bucket
 resource "google_storage_bucket_object" "cloud_function_bucket_object" {
-  name   = "watchdog_cloud_function_source.zip"
+  name   = format("%s#%s", "watchdog_cloud_function_source.zip", data.archive_file.cloud_function_source_zip.output_md5)
   bucket = google_storage_bucket.cloud_function_source_bucket.name
   source = "${path.module}/watchdog_cloud_function_source.zip"
 }
