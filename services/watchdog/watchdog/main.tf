@@ -1,4 +1,5 @@
 
+# Create a zip archive with the cloud function's source code
 data "archive_file" "cloud_function_source_zip" {
   type        = "zip"
   source_dir  = var.source_path
@@ -6,17 +7,20 @@ data "archive_file" "cloud_function_source_zip" {
   output_path = "${path.module}/watchdog_cloud_function_source.zip"
 }
 
+# Create a storage bucket for the cloud function's source code
 resource "google_storage_bucket" "cloud_function_source_bucket" {
   name = var.source_bucket_name
   location = var.source_bucket_location
 }
 
+# Upload the cloud function's source code to the storage bucket
 resource "google_storage_bucket_object" "cloud_function_bucket_object" {
   name   = "watchdog_cloud_function_source.zip"
   bucket = google_storage_bucket.cloud_function_source_bucket.name
   source = "${path.module}/watchdog_cloud_function_source.zip"
 }
 
+# Deploy the cloud function
 resource "google_cloudfunctions_function" "function" {
   name        = var.function_name
   description = "Watchdog"
@@ -37,7 +41,18 @@ resource "google_cloudfunctions_function" "function" {
   }
 }
 
-# IAM entry for all users to invoke the function
+# Create an IAM entry for invoking the function
+# This IAM entry allows anyone to invoke the function via HTTP, without being authenticated
+#
+# It would be ideal to have the function require authentication, but that will be for later
+#
+# The two main risks posed by allowing this to be called unauthenticated are:
+# - An external party could make the function reach the throttling limit for GitHub API calls
+#   which will then result in no on-demand build agents being started/stopped for the remainder
+#   of the hour. This, in turn, will delay builds and sometimes cost a bit extra money. (VMs
+#   being active for up to 60 minutes more than necessary.)
+# - An external party could see names of internal resources: VM names, names of GitHub repositories, and the like.
+#   There is however no risk that actual game files, or secrets/keys get exposed.
 resource "google_cloudfunctions_function_iam_member" "invoker" {
   project        = google_cloudfunctions_function.function.project
   region         = google_cloudfunctions_function.function.region
