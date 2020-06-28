@@ -19,6 +19,10 @@ variable "source_path" {
   type = string
 }
 
+variable "build_agent_project" {
+  type = string
+}
+
 variable "build_agent_zone" {
   type = string
 }

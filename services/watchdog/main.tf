@@ -9,6 +9,7 @@ module "watchdog" {
   function_name      = var.function_name
   function_region    = var.function_region
 
+  build_agent_project = var.build_agent_project
   build_agent_zone = var.build_agent_zone
 
   github_pat = var.github_pat

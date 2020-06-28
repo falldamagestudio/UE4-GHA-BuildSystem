@@ -33,7 +33,7 @@ resource "google_cloudfunctions_function" "function" {
   trigger_http          = true
   entry_point           = "RunWatchdog"
   environment_variables = {
-    # No need to set GCP_PROJECT; it is reserved, and automatically set to the function's own project ID
+    GOOGLE_CLOUD_PROJECT = var.build_agent_project
     GCE_ZONE = var.build_agent_zone
     GITHUB_PAT = var.github_pat
     GITHUB_ORGANIZATION = var.github_organization

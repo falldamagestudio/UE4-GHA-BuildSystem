@@ -9,6 +9,7 @@ module "watchdog" {
   function_name   = var.function_name
   function_region = data.terraform_remote_state.project.outputs.region
 
+  build_agent_project = data.terraform_remote_state.project.outputs.project_id
   build_agent_zone = data.terraform_remote_state.project.outputs.zone
 
   github_pat          = var.github_pat
