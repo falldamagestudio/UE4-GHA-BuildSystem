@@ -9,7 +9,7 @@ data "archive_file" "cloud_function_source_zip" {
 
 # Create a storage bucket for the cloud function's source code
 resource "google_storage_bucket" "cloud_function_source_bucket" {
-  name = var.source_bucket_name
+  name     = var.source_bucket_name
   location = var.source_bucket_location
 }
 
@@ -22,12 +22,12 @@ resource "google_storage_bucket_object" "cloud_function_bucket_object" {
 
 # Deploy the cloud function
 resource "google_cloudfunctions_function" "function" {
-  depends_on = [ google_project_iam_member.function_instance_admin_permissions ]
+  depends_on = [google_project_iam_member.function_instance_admin_permissions]
 
-  name        = var.function_name
-  description = "Watchdog"
-  runtime     = "go113"
-  region      = var.function_region
+  name                  = var.function_name
+  description           = "Watchdog"
+  runtime               = "go113"
+  region                = var.function_region
   service_account_email = google_service_account.function_service_account.email
 
   available_memory_mb   = 128
@@ -37,32 +37,11 @@ resource "google_cloudfunctions_function" "function" {
   entry_point           = "RunWatchdog"
   environment_variables = {
     GOOGLE_CLOUD_PROJECT = var.build_agent_project
-    GCE_ZONE = var.build_agent_zone
-    GITHUB_PAT = var.github_pat
-    GITHUB_ORGANIZATION = var.github_organization
-    GITHUB_REPOSITORY = var.github_repository
+    GCE_ZONE             = var.build_agent_zone
+    GITHUB_PAT           = var.github_pat
+    GITHUB_ORGANIZATION  = var.github_organization
+    GITHUB_REPOSITORY    = var.github_repository
   }
-}
-
-# Create an IAM entry for invoking the function
-# This IAM entry allows anyone to invoke the function via HTTP, without being authenticated
-#
-# It would be ideal to have the function require authentication, but that will be for later
-#
-# The two main risks posed by allowing this to be called unauthenticated are:
-# - An external party could make the function reach the throttling limit for GitHub API calls
-#   which will then result in no on-demand build agents being started/stopped for the remainder
-#   of the hour. This, in turn, will delay builds and sometimes cost a bit extra money. (VMs
-#   being active for up to 60 minutes more than necessary.)
-# - An external party could see names of internal resources: VM names, names of GitHub repositories, and the like.
-#   There is however no risk that actual game files, or secrets/keys get exposed.
-resource "google_cloudfunctions_function_iam_member" "invoker" {
-  project        = google_cloudfunctions_function.function.project
-  region         = google_cloudfunctions_function.function.region
-  cloud_function = google_cloudfunctions_function.function.name
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "allUsers"
 }
 
 # Create a service account. The cloud function will run in the context of this service account
@@ -73,7 +52,56 @@ resource "google_service_account" "function_service_account" {
 
 # Grant the cloud function's service account permissions to control any Compute Engine instances within the project
 resource "google_project_iam_member" "function_instance_admin_permissions" {
-  depends_on = [ google_service_account.function_service_account ]
-  role    = "roles/compute.instanceAdmin.v1"
-  member  = "serviceAccount:${google_service_account.function_service_account.email}"
+  depends_on = [google_service_account.function_service_account]
+  role       = "roles/compute.instanceAdmin.v1"
+  member     = "serviceAccount:${google_service_account.function_service_account.email}"
+}
+
+# Create a service account. This account can be used to invoke the function via HTTP.
+resource "google_service_account" "invoke_function_service_account" {
+  account_id   = "invoke-watchdog"
+  display_name = "Service account used to invoke the watchdog via HTTP"
+}
+
+# Grant the cloud function's invocation service account permissions to launch the function via HTTP
+resource "google_cloudfunctions_function_iam_member" "function_invoker" {
+  project        = google_cloudfunctions_function.function.project
+  region         = google_cloudfunctions_function.function.region
+  cloud_function = google_cloudfunctions_function.function.name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${google_service_account.invoke_function_service_account.email}"
+}
+
+# Create an App Engine application for the scheduler.
+# The sole purpose of this application is to enable the cloud scheduler to run.
+# See https://www.terraform.io/docs/providers/google/r/cloud_scheduler_job.html for details.
+#
+# Also, note that this application can currently not be deleted by Terraform without deleting the
+#   project as a whole. See https://www.terraform.io/docs/providers/google/r/app_engine_application.html
+#   for details.
+resource "google_app_engine_application" "scheduler_app" {
+  project     = google_cloudfunctions_function.function.project
+  location_id = var.scheduler_app_engine_location
+}
+
+# Create a scheduler job that invokes the Cloud Function every ${var.scheduling_interval} minutes
+resource "google_cloud_scheduler_job" "scheduler_job" {
+  depends_on = [google_cloudfunctions_function_iam_member.function_invoker, google_app_engine_application.scheduler_app]
+
+  name             = "watchdog-scheduler-job"
+  description      = "Regularly scheduled invocation of the Watchdog"
+  region           = google_cloudfunctions_function.function.region
+  schedule         = "*/${var.scheduling_interval} * * * *"
+  time_zone        = "Etc/UTC"
+  attempt_deadline = "60s"
+
+  http_target {
+    http_method = "GET"
+    uri         = google_cloudfunctions_function.function.https_trigger_url
+
+    oidc_token {
+      service_account_email = google_service_account.invoke_function_service_account.email
+    }
+  }
 }

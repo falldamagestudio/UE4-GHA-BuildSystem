@@ -10,9 +10,12 @@ module "watchdog" {
   function_region = data.terraform_remote_state.project.outputs.region
 
   build_agent_project = data.terraform_remote_state.project.outputs.project_id
-  build_agent_zone = data.terraform_remote_state.project.outputs.zone
+  build_agent_zone    = data.terraform_remote_state.project.outputs.zone
 
   github_pat          = var.github_pat
   github_organization = var.github_organization
   github_repository   = var.github_repository
+
+  scheduler_app_engine_location = var.scheduler_app_engine_location
+  scheduling_interval           = var.scheduling_interval
 }

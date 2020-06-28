@@ -39,3 +39,10 @@ variable "github_repository" {
   type = string
 }
 
+variable "scheduler_app_engine_location" {
+  type = string
+}
+
+variable "scheduling_interval" {
+  type = number
+}
