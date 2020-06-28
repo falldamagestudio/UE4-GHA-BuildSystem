@@ -73,21 +73,9 @@ resource "google_cloudfunctions_function_iam_member" "function_invoker" {
   member = "serviceAccount:${google_service_account.invoke_function_service_account.email}"
 }
 
-# Create an App Engine application for the scheduler.
-# The sole purpose of this application is to enable the cloud scheduler to run.
-# See https://www.terraform.io/docs/providers/google/r/cloud_scheduler_job.html for details.
-#
-# Also, note that this application can currently not be deleted by Terraform without deleting the
-#   project as a whole. See https://www.terraform.io/docs/providers/google/r/app_engine_application.html
-#   for details.
-resource "google_app_engine_application" "scheduler_app" {
-  project     = google_cloudfunctions_function.function.project
-  location_id = var.scheduler_app_engine_location
-}
-
 # Create a scheduler job that invokes the Cloud Function every ${var.scheduling_interval} minutes
 resource "google_cloud_scheduler_job" "scheduler_job" {
-  depends_on = [google_cloudfunctions_function_iam_member.function_invoker, google_app_engine_application.scheduler_app]
+  depends_on = [google_cloudfunctions_function_iam_member.function_invoker]
 
   name             = "watchdog-scheduler-job"
   description      = "Regularly scheduled invocation of the Watchdog"
