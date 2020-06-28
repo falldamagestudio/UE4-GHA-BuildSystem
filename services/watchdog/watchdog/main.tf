@@ -22,10 +22,13 @@ resource "google_storage_bucket_object" "cloud_function_bucket_object" {
 
 # Deploy the cloud function
 resource "google_cloudfunctions_function" "function" {
+  depends_on = [ google_project_iam_member.function_instance_admin_permissions ]
+
   name        = var.function_name
   description = "Watchdog"
   runtime     = "go113"
   region      = var.function_region
+  service_account_email = google_service_account.function_service_account.email
 
   available_memory_mb   = 128
   source_archive_bucket = google_storage_bucket.cloud_function_source_bucket.name
@@ -60,4 +63,17 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
 
   role   = "roles/cloudfunctions.invoker"
   member = "allUsers"
+}
+
+# Create a service account. The cloud function will run in the context of this service account
+resource "google_service_account" "function_service_account" {
+  account_id   = "watchdog-service-account"
+  display_name = "Watchdog Service Account"
+}
+
+# Grant the cloud function's service account permissions to control any Compute Engine instances within the project
+resource "google_project_iam_member" "function_instance_admin_permissions" {
+  depends_on = [ google_service_account.function_service_account ]
+  role    = "roles/compute.instanceAdmin.v1"
+  member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
