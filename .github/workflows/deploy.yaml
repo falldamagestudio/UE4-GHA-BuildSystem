@@ -11,7 +11,17 @@ env:
   TERRAFORM_VERSION: "0.12.28"
 
 jobs:
+  avoid_concurrent_invocations:
+    timeout-minutes: 120
+    runs-on: ubuntu-latest
+    steps:
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deploy_project:
+    needs: [ avoid_concurrent_invocations ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
