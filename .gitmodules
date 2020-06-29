@@ -4,3 +4,6 @@
 [submodule "submodules/UE4-GHA-BuildAgentWatchdog"]
 	path = submodules/UE4-GHA-BuildAgentWatchdog
 	url = https://github.com/Kalmalyzer/UE4-GHA-BuildAgentWatchdog
+[submodule "submodules/UE4-BuildServices"]
+	path = submodules/UE4-BuildServices
+	url = https://github.com/Kalmalyzer/UE4-BuildServices.git

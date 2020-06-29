@@ -1,5 +1,5 @@
 module "watchdog" {
-  source = "../../../../services/watchdog"
+  source = "../../../../submodules/UE4-BuildServices/services/watchdog"
 
   source_path = var.source_path
 

@@ -1,5 +1,5 @@
 module "builders" {
-  source = "../../../../services/builders"
+  source = "../../../../submodules/UE4-BuildServices/services/builders"
 
   github_scope      = var.github_scope
   github_pat        = var.github_pat
