@@ -1,0 +1,116 @@
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  TF_IN_AUTOMATION: 1
+  TF_INPUT: 0
+  TF_CLI_ARGS_apply: "-auto-approve"
+  GOOGLE_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
+  TERRAFORM_VERSION: "0.12.28"
+
+jobs:
+  avoid_concurrent_invocations:
+    timeout-minutes: 120
+    runs-on: ubuntu-latest
+    steps:
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy_project:
+    needs: [ avoid_concurrent_invocations ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Deploy project"
+        run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+  deploy_storage:
+    needs: [ deploy_project ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Deploy storage"
+        run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+  build_buildagent_image:
+    needs: [ deploy_project ]
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build_image.outputs.image_name }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: "Setup gcloud"
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
+          export_default_credentials: true
+
+      - name: "Build image"
+        id: build_image
+        run: |
+
+          TEMPLATE_FILE=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json
+          VARIABLE_FILE=${{ github.workspace }}/configurations/${{ github.repository }}/build-agent-image/vars.json
+
+          TEMPLATE_FOLDER=`dirname "${TEMPLATE_FILE}"`
+          IMAGE_NAME=build-agent-`cd "${TEMPLATE_FOLDER}" && git rev-parse --short HEAD`
+
+          submodules/UE4-BuildServices/scripts/build-packer-image.sh ${TEMPLATE_FILE} ${VARIABLE_FILE} ${IMAGE_NAME}
+          
+          echo  "::set-output name=image_name::${IMAGE_NAME}"
+
+  deploy_builders:
+    needs: [ deploy_storage, build_buildagent_image ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Deploy builders"
+        run: |
+          export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
+          export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }}
+          cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+  deploy_watchdog:
+    needs: [ deploy_project ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Deploy watchdog"
+        run: |
+          export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
+          cd configurations/${{ github.repository }}/watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
