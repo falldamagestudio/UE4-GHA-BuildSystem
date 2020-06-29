@@ -76,7 +76,7 @@ jobs:
           TEMPLATE_FOLDER=`dirname "${TEMPLATE_FILE}"`
           IMAGE_NAME=build-agent-`cd "${TEMPLATE_FOLDER}" && git rev-parse --short HEAD`
 
-          scripts/build-packer-image.sh ${TEMPLATE_FILE} ${VARIABLE_FILE} ${IMAGE_NAME}
+          submodules/UE4-BuildServices/scripts/build-packer-image.sh ${TEMPLATE_FILE} ${VARIABLE_FILE} ${IMAGE_NAME}
           
           echo  "::set-output name=image_name::${IMAGE_NAME}"
 
