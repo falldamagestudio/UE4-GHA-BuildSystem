@@ -80,3 +80,18 @@ jobs:
           export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
           export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }}
           cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+  deploy_watchdog:
+    needs: [ deploy_project ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Deploy watchdog"
+        run: |
+          export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
+          cd configurations/${{ github.repository }}/watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
