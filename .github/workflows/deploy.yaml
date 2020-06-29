@@ -8,6 +8,7 @@ env:
   TF_INPUT: 0
   TF_CLI_ARGS_apply: "-auto-approve"
   GOOGLE_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
+  TERRAFORM_VERSION: "0.12.28"
 
 jobs:
   deploy_project:
@@ -16,6 +17,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: "Deploy project"
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
@@ -27,6 +30,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: "Deploy storage"
         run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
@@ -67,6 +72,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: "Deploy builders"
         run: |
