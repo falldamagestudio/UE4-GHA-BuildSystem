@@ -66,12 +66,13 @@ jobs:
         id: build_image
         run: |
 
-          BUILD_AGENT_CONFIG_FILE=${{ github.workspace }}/configurations/${{ github.repository }}/build-agent-image/vars.json
-          BUILD_AGENT_LOCATION=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent
+          TEMPLATE_FILE=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json
+          VARIABLE_FILE=${{ github.workspace }}/configurations/${{ github.repository }}/build-agent-image/vars.json
 
-          IMAGE_NAME=build-agent-`cd ${BUILD_AGENT_LOCATION} && git rev-parse --short HEAD`
+          TEMPLATE_FOLDER=`dirname "${TEMPLATE_FILE}"`
+          IMAGE_NAME=build-agent-`cd "${TEMPLATE_FOLDER}" && git rev-parse --short HEAD`
 
-          scripts/build-packer-image.sh ${BUILD_AGENT_CONFIG_FILE} ${BUILD_AGENT_LOCATION} ${IMAGE_NAME}
+          scripts/build-packer-image.sh ${TEMPLATE_FILE} ${VARIABLE_FILE} ${IMAGE_NAME}
           
           echo  "::set-output name=image_name::${IMAGE_NAME}"
 

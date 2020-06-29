@@ -1,21 +1,24 @@
 #!/bin/bash
 
 if [ "$#" -ne 3 ]; then
-    echo "Usage: build-packer-image.sh <config file> <packer script folder> <output image name>"
+    echo "Usage: build-packer-image.sh <template file, with absolute path> <variable file, with absolute path> <output image name>"
 	exit 1
 fi
 
-BUILD_AGENT_CONFIG_FILE=$1
-BUILD_AGENT_PACKER_FOLDER=$2
+TEMPLATE_FILE=$1
+VARIABLE_FILE=$2
 IMAGE_NAME=$3
 
-PROJECT=`cat ${BUILD_AGENT_CONFIG_FILE} | jq -r ".project_id"`
+TEMPLATE_FOLDER=`dirname "${TEMPLATE_FILE}"`
+TEMPLATE_FILENAME=`base "${TEMPLATE_FILE}"`
+
+PROJECT=`cat ${VARIABLE_FILE} | jq -r ".project_id"`
 
 if [[ `gcloud --project=${PROJECT} compute images list --filter=name=${IMAGE_NAME} --format=json` != '[]' ]]; then
 
 	echo "Image already exists; skipping build"
 
 else
-	cd ${BUILD_AGENT_PACKER_FOLDER}
-	packer build -var-file=${BUILD_AGENT_CONFIG_FILE} -var image_name=${IMAGE_NAME} UE4-GCE-Win64-Git-GitHubActions-MSVC.json 
+	cd ${TEMPLATE_FOLDER}
+	packer build -var-file=${VARIABLE_FILE} -var image_name=${IMAGE_NAME} ${TEMPLATE_FILENAME}
 fi
