@@ -1,5 +1,7 @@
-module "longtail_store" {
-  source            = "../../../modules/longtail_store"
-  name              = var.name
-  location          = var.location
+resource "google_storage_bucket" "this" {
+  name          = var.name
+  location      = var.location
+  force_destroy = true
+
+  bucket_policy_only = true
 }
