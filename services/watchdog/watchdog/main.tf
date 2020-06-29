@@ -65,6 +65,8 @@ resource "google_service_account" "invoke_function_service_account" {
 
 # Grant the cloud function's invocation service account permissions to launch the function via HTTP
 resource "google_cloudfunctions_function_iam_member" "function_invoker" {
+  depends_on = [google_service_account.invoke_function_service_account]
+
   project        = google_cloudfunctions_function.function.project
   region         = google_cloudfunctions_function.function.region
   cloud_function = google_cloudfunctions_function.function.name
@@ -93,3 +95,40 @@ resource "google_cloud_scheduler_job" "scheduler_job" {
     }
   }
 }
+
+# Create an IAM entry for invoking the function
+# This IAM entry allows anyone to invoke the function via HTTP, without being authenticated
+#
+# It would be ideal to have the function always require authentication, but that will be for later
+# The problematic bit is: how do we, using Terraform, extract a token which we can pass to the GitHub workflow
+#   (as a secret) which is valid for authenticating as the 'invoke-watchdog' service account?
+# If we solve that, we can remove this IAM entry.
+#
+# The two main risks posed by allowing this to be called unauthenticated are:
+# - An external party could make the function reach the throttling limit for GitHub API calls
+#   which will then result in no on-demand build agents being started/stopped for the remainder
+#   of the hour. This, in turn, will delay builds and sometimes cost a bit extra money. (VMs
+#   being active for up to 60 minutes more than necessary.)
+# - An external party could see names of internal resources: VM names, names of GitHub repositories, and the like.
+#   There is however no risk that actual game files, or secrets/keys get exposed.
+resource "google_cloudfunctions_function_iam_member" "allow_unauthenticated_invocation" {
+  project        = google_cloudfunctions_function.function.project
+  region         = google_cloudfunctions_function.function.region
+  cloud_function = google_cloudfunctions_function.function.name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "allUsers"
+}
+
+# The GitHub provider v2.8.1 does not support adding secrets to personal repositories.
+# We should revisit this once GitHub provider v2.9.0 is released
+#
+## Add a URL to the GitHub repo; the GHA workflow is expected to call this trigger-URL at start & end of each build job
+#resource "github_actions_secret" "github_watchdog_trigger_url" {
+#  depends_on = [google_cloudfunctions_function_iam_member.github_invoker]
+#
+#  organization     = var.github_organization
+#  repository       = var.github_repository
+#  secret_name      = "WATCHDOG_TRIGGER_URL"
+#  plaintext_value  = google_cloudfunctions_function.function.https_trigger_url
+#}
