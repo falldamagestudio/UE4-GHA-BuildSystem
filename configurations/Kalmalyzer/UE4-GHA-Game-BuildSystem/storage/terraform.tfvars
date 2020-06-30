@@ -1,3 +1,3 @@
-terraform_state_bucket = "ue4-gha-infrastructure-kalms-state"
+terraform_state_bucket = "kalms-ue4-gha-game-bs-state"
 
-name = "ue4-gha-infrastructure-kalms-longtail"
+name = "kalms-ue4-gha-game-bs-longtail"

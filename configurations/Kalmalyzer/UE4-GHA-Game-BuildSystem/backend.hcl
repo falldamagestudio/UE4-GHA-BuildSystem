@@ -1,1 +1,1 @@
-bucket = "ue4-gha-infrastructure-kalms-state"
+bucket = "kalms-ue4-gha-game-bs-state"

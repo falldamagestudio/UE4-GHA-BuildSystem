@@ -1,4 +1,4 @@
-terraform_state_bucket = "ue4-gha-infrastructure-kalms-state"
+terraform_state_bucket = "kalms-ue4-gha-game-bs-state"
 
 boot_disk_size = "200"
 github_scope   = "Kalmalyzer/UE4-GHA-Game"
