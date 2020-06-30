@@ -26,7 +26,7 @@ You will need to do these steps once for the game, and once for each user that i
 
 * Create an App Engine application in the project. Create it in the location where you will run the watchdog.
 
-* Add a new Service Account to the project. Name it `GitHub Actions Build System`. Grant it the Project Editor role.
+* Add a new Service Account to the project. Name it `GitHub Actions Build System`. Grant it the Project Owner role.
 * Create a key for the service account, in JSON format. Hold on to it for the GitHub setup step.
 
 
@@ -83,6 +83,7 @@ Either way, it is time to do some configuration of the repository:
 * A few details need to be set in local (ignored by Git) files
 ** `.../builders/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
 ** `.../builders/user.auto.tfvars:image` - VM image name to be used for builders
+** `.../watchdog/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
 
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `TF_VAR_image=<image_name>`
