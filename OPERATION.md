@@ -87,7 +87,7 @@ Either way, it is time to do some configuration of the repository:
 
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `TF_VAR_image=<image_name>`
-* `./scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
+* `./submodules/UE4-BuildServices/scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
 * `(cd configurations/<org>/<repo>/storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `(cd configurations/<org>/<repo>/builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `(cd configurations/<org>/<repo>/watchdog && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
