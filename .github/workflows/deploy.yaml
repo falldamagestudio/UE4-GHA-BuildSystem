@@ -47,8 +47,11 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: "Deploy storage"
-        run: cd configurations/${{ github.repository }}/storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+      - name: "Deploy engine storage"
+        run: cd configurations/${{ github.repository }}/engine-storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+      - name: "Deploy game storage"
+        run: cd configurations/${{ github.repository }}/game-storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
   build_buildagent_image:
     needs: [ deploy_project ]
@@ -92,13 +95,19 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: "Deploy builders"
+      - name: "Deploy engine builders"
+        run: |
+          export TF_VAR_github_pat=${{ secrets.ENGINE_GITHUB_PAT }}
+          export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }}
+          cd configurations/${{ github.repository }}/engine-builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+      - name: "Deploy game builders"
         run: |
           export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
           export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }}
-          cd configurations/${{ github.repository }}/builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+          cd configurations/${{ github.repository }}/game-builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
-  deploy_watchdog:
+  deploy_watchdogs:
     needs: [ deploy_project ]
     runs-on: ubuntu-latest
     steps:
@@ -110,7 +119,12 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: "Deploy watchdog"
+      - name: "Deploy engine watchdog"
+        run: |
+          export TF_VAR_github_pat=${{ secrets.ENGINE_GITHUB_PAT }}
+          cd configurations/${{ github.repository }}/engine-watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+
+      - name: "Deploy game watchdog"
         run: |
           export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
-          cd configurations/${{ github.repository }}/watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+          cd configurations/${{ github.repository }}/game-watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply

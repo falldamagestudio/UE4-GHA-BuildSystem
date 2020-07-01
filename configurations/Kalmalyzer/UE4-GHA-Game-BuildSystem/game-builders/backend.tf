@@ -1,5 +1,5 @@
 terraform {
   backend "gcs" {
-    prefix = "watchdog"
+    prefix = "game-builders"
   }
 }

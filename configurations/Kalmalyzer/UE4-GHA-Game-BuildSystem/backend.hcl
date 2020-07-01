@@ -1,1 +1,1 @@
-bucket = "kalms-ue4-gha-game-bs-state"
+bucket = "kalmalyzer-ue4-gha-buildsystem-state"

@@ -6,6 +6,8 @@ module "watchdog" {
   source_bucket_name     = var.source_bucket_name
   source_bucket_location = data.terraform_remote_state.project.outputs.region
 
+  resource_name_prefix = "game"
+
   function_name   = var.function_name
   function_region = data.terraform_remote_state.project.outputs.region
 
