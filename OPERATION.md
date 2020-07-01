@@ -57,17 +57,28 @@ Either way, it is time to do some configuration of the repository:
 ** `.../project/terraform.tfvars:project_id` - Google Cloud project ID
 ** `.../project/terraform.tfvars:region` - region where region-bound Google Cloud resources will be created
 ** `.../project/terraform.tfvars:zone` - zone where zone-bound Google Cloud resources will be created
-** `.../storage/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../storage/terraform.tfvars:name` - Name of longtail bucket
-** `.../builders/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../builders/terraform.tfvars:github_scope` - org/repo name for the game project
-** `.../builders/terraform.tfvars:machine_type` - build machine type
-** `.../builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
-** `.../watchdog/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../watchdog/terraform.tfvars:source_bucket_name` - Name of bucket that will be used for storing cloud function source code
-** `.../watchdog/terraform.tfvars:function_name` - Name cloud function
-** `.../watchdog/terraform.tfvars:github_organization` - org name for the game project
-** `.../watchdog/terraform.tfvars:github_project` - repo name for the game project
+** `.../engine-storage/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../engine-storage/terraform.tfvars:name` - Name of longtail bucket
+** `.../game-storage/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../game-storage/terraform.tfvars:name` - Name of longtail bucket
+** `.../engine-builders/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../engine-builders/terraform.tfvars:github_scope` - org/repo name for the game project
+** `.../engine-builders/terraform.tfvars:machine_type` - build machine type
+** `.../engine-builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
+** `.../game-builders/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../game-builders/terraform.tfvars:github_scope` - org/repo name for the game project
+** `.../game-builders/terraform.tfvars:machine_type` - build machine type
+** `.../game-builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
+** `.../engine-watchdog/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../engine-watchdog/terraform.tfvars:source_bucket_name` - Name of bucket that will be used for storing cloud function source code
+** `.../engine-watchdog/terraform.tfvars:function_name` - Name cloud function
+** `.../engine-watchdog/terraform.tfvars:github_organization` - org name for the game project
+** `.../engine-watchdog/terraform.tfvars:github_project` - repo name for the game project
+** `.../game-watchdog/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
+** `.../game-watchdog/terraform.tfvars:source_bucket_name` - Name of bucket that will be used for storing cloud function source code
+** `.../game-watchdog/terraform.tfvars:function_name` - Name cloud function
+** `.../game-watchdog/terraform.tfvars:github_organization` - org name for the game project
+** `.../game-watchdog/terraform.tfvars:github_project` - repo name for the game project
 * Modify `configurations/<org>/<repo>/<your game>-BuildSystem/build-agent-image/vars.json` to point to the appropriate Google Cloud project
 
 * Commit & push the changes. GitHub Actions will bring up the infrastructure.
@@ -88,13 +99,19 @@ Either way, it is time to do some configuration of the repository:
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `TF_VAR_image=<image_name>`
 * `./submodules/UE4-BuildServices/scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
-* `(cd configurations/<org>/<repo>/storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/watchdog && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/engine-storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/game-storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/engine-builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/game-builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/engine-watchdog && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/game-watchdog && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 
 ## Tear down the infrastructure manually
 
-* `(cd configurations/<org>/<repo>/watchdog && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/builders && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/storage && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/game-watchdog && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/engine-watchdog && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/game-builders && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/engine-builders && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/game-storage && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/engine-storage && terraform init --backend-config=../backend.hcl && terraform destroy)`
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform destroy)`
