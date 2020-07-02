@@ -10,5 +10,6 @@ module "builders" {
   boot_disk_size    = var.boot_disk_size
   instance_name     = var.instance_name
   runner_name       = var.runner_name
+  on_demand         = true
   storage_bucket_id = data.terraform_remote_state.engine_storage.outputs.storage_bucket_id
 }
