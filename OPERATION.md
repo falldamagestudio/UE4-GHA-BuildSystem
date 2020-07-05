@@ -83,6 +83,14 @@ Either way, it is time to do some configuration of the repository:
 
 * Commit & push the changes. GitHub Actions will bring up the infrastructure.
 
+## Engine project setup
+
+* Add some secrets to your game project:
+* `GITHUB_PAT` - the GitHub Personal Access token that will be used to access the Engine + the UE4 repo
+* `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI
+* `ENGINE_GCS_BUCKET` - same bucket name as given in `.../engine-storage/terraform.tfvars:name`
+* `ENGINE_GCS_BUCKET_CREDENTIALS` - credentials for the `engine-build-agent@...` Service Account (you will likely need to create these manually)
+
 ## Game project setup
 
 * Add some secrets to your game project:
