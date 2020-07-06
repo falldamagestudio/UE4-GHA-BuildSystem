@@ -11,5 +11,8 @@ module "builders" {
   instance_name     = var.instance_name
   runner_name       = var.runner_name
   on_demand         = true
-  storage_bucket_id = data.terraform_remote_state.game_storage.outputs.storage_bucket_id
+  storage_bucket_ids = [
+    data.terraform_remote_state.engine_storage.outputs.storage_bucket_id,
+    data.terraform_remote_state.game_storage.outputs.storage_bucket_id
+  ]
 }
