@@ -36,38 +36,6 @@ jobs:
       - name: "Deploy project"
         run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
 
-  deploy_engine_storage:
-    needs: [ deploy_project ]
-    name: "Deploy engine storage"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: "Deploy engine storage"
-        run: cd configurations/${{ github.repository }}/engine-storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
-
-  deploy_game_storage:
-    needs: [ deploy_project ]
-    name: "Deploy game storage"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: "Deploy game storage"
-        run: cd configurations/${{ github.repository }}/game-storage && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
-
   build_buildagent_image:
     needs: [ deploy_project ]
     name: "Build BuildAgent VM image"
@@ -99,9 +67,9 @@ jobs:
           
           echo  "::set-output name=image_name::${IMAGE_NAME}"
 
-  deploy_engine_builders:
-    needs: [ deploy_engine_storage, build_buildagent_image ]
-    name: "Deploy engine builders"
+  deploy_services:
+    needs: [ build_buildagent_image ]
+    name: "Deploy services"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -112,63 +80,7 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: "Deploy engine builders"
+      - name: "Deploy services"
         run: |
-          export TF_VAR_github_pat=${{ secrets.ENGINE_GITHUB_PAT }}
-          export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }}
-          cd configurations/${{ github.repository }}/engine-builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
-
-  deploy_game_builders:
-    needs: [ deploy_game_storage, build_buildagent_image ]
-    name: "Deploy game builders"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: "Deploy game builders"
-        run: |
-          export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
-          export TF_VAR_image=${{ needs.build_buildagent_image.outputs.image }}
-          cd configurations/${{ github.repository }}/game-builders && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
-
-  deploy_engine_watchdog:
-    needs: [ deploy_project ]
-    name: "Deploy engine watchdog"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: "Deploy engine watchdog"
-        run: |
-          export TF_VAR_github_pat=${{ secrets.ENGINE_GITHUB_PAT }}
-          cd configurations/${{ github.repository }}/engine-watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
-
-  deploy_game_watchdog:
-    needs: [ deploy_project ]
-    name: "Deploy game watchdog"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: "Deploy game watchdog"
-        run: |
-          export TF_VAR_github_pat=${{ secrets.GAME_GITHUB_PAT }}
-          cd configurations/${{ github.repository }}/game-watchdog && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply
+          export TF_VAR_github_pat=${{ secrets.ENGINE_AND_GAME_GITHUB_PAT }}
+          cd configurations/${{ github.repository }}/services && terraform init -backend-config=../backend.hcl && terraform plan && terraform apply

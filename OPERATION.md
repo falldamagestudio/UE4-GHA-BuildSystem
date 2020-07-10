@@ -46,7 +46,7 @@ Either way, it is time to do some configuration of the repository:
 
 * Locate the key that you created for the `GitHub Actions Build System` account. Add a new secret to the GitHub repository, with name `GCP_SERVICE_ACCOUNT_CREDENTIALS` and the contents of the key file as its value.
 
-* Create a Personal Access Token for the GitHub Account (either build system account or your personal account), with name `Access Token for GitHub Actions in <org>/<your game>` and scopes `admin:repo_hook`, `repo`, `workflow`. Add a new secret to the GitHub repository, with name `GAME_GITHUB_PAT` and the Personal Access Token string as its value.
+* Create a Personal Access Token for the GitHub Account (either build system account or your personal account), with name `Access Token for GitHub Actions in <org>/<your game>` and scopes `admin:repo_hook`, `repo`, `workflow`. Add a new secret to the GitHub repository, with name `ENGINE_AND_GAME_GITHUB_PAT` and the Personal Access Token string as its value.
 
 ## Terraform setup
 
