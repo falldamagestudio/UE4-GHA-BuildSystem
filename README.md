@@ -28,4 +28,4 @@ This is a proof-of-concept. It works, but hasn't been used by a team that is act
 
 # How to use
 
-See [OPERATION.md](Operation.md) for usage instructions.
+See [OPERATION.md](OPERATION.md) for usage instructions.

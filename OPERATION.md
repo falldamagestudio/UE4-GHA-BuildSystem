@@ -53,73 +53,38 @@ Either way, it is time to do some configuration of the repository:
 * Check out the `<your game>-BuildSystem` repository.
 * Duplicate `configurations/falldamagestudio/UE4-GHA-Game-BuildSystem` and name the folder `configurations/<org>/<repo>/<your game>-BuildSystem`, according to your git repo name
 * Modify `configurations/<org>/<repo>/<your game>-BuildSystem/backend.hcl` to point to the state bucket
-* Modify all `configurations/<org>/<repo>/<your game>-BuildSystem/*/terraform.tfvars` files, and ensure that all elements have up-to-date names. Important items:
-** `.../project/terraform.tfvars:project_id` - Google Cloud project ID
-** `.../project/terraform.tfvars:region` - region where region-bound Google Cloud resources will be created
-** `.../project/terraform.tfvars:zone` - zone where zone-bound Google Cloud resources will be created
-** `.../engine-storage/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../engine-storage/terraform.tfvars:name` - Name of longtail bucket
-** `.../game-storage/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../game-storage/terraform.tfvars:name` - Name of longtail bucket
-** `.../engine-builders/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../engine-builders/terraform.tfvars:github_scope` - org/repo name for the game project
-** `.../engine-builders/terraform.tfvars:machine_type` - build machine type
-** `.../engine-builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
-** `.../game-builders/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../game-builders/terraform.tfvars:github_scope` - org/repo name for the game project
-** `.../game-builders/terraform.tfvars:machine_type` - build machine type
-** `.../game-builders/terraform.tfvars:boot_disk_size` - boot disk size, measured in GB. Max 2TB.
-** `.../engine-watchdog/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../engine-watchdog/terraform.tfvars:source_bucket_name` - Name of bucket that will be used for storing cloud function source code
-** `.../engine-watchdog/terraform.tfvars:function_name` - Name cloud function
-** `.../engine-watchdog/terraform.tfvars:github_organization` - org name for the game project
-** `.../engine-watchdog/terraform.tfvars:github_project` - repo name for the game project
-** `.../game-watchdog/terraform.tfvars:terraform_state_bucket` - Same bucket name as given in backend.hcl
-** `.../game-watchdog/terraform.tfvars:source_bucket_name` - Name of bucket that will be used for storing cloud function source code
-** `.../game-watchdog/terraform.tfvars:function_name` - Name cloud function
-** `.../game-watchdog/terraform.tfvars:github_organization` - org name for the game project
-** `.../game-watchdog/terraform.tfvars:github_project` - repo name for the game project
+* Modify `configurations/<org>/<repo>/<your game>-BuildSystem/*/terraform.tfvars` files, and ensure that all elements have up-to-date names; see the corresponding `variables.tf` files for details
 * Modify `configurations/<org>/<repo>/<your game>-BuildSystem/build-agent-image/vars.json` to point to the appropriate Google Cloud project
 
 * Commit & push the changes. GitHub Actions will bring up the infrastructure.
 
-## Engine project setup
+## Engine GitHub repo setup
 
-* Add some secrets to your game project:
-* `GITHUB_PAT` - the GitHub Personal Access token that will be used to access the Engine + the UE4 repo
-* `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI
-* `ENGINE_GCS_BUCKET` - same bucket name as given in `.../engine-storage/terraform.tfvars:name`
-* `ENGINE_GCS_BUCKET_CREDENTIALS` - credentials for the `engine-build-agent@...` Service Account (you will likely need to create these manually)
+* Add some secrets to your engine repository:
+* `ENGINE_GITHUB_PAT` - the GitHub Personal Access token that will be used to access the Engine + the UE4 repo
+* `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI, or via doing `terraform show` on the `services` project
+* `GCP_ENGINE_BUILD_AGENT_CREDENTIALS` - credentials for the `engine-build-agent@...` Service Account (you will create these manually via the GCP Cloud Console)
 
-## Game project setup
+## Game GitHub repo setup
 
-* Add some secrets to your game project:
-* `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI
-* `LONGTAIL_GCLOUD_CREDENTIALS` - credentials for the Service Account that that any Google Cloud activity is done as
+* Add some secrets to your game repository:
+* `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI, or via doing `terraform show` on the `services` project
+* `GCP_GAME_BUILD_AGENT_CREDENTIALS` - credentials for `game-build-agent@...` Service Account (you will create these manually via the GCP Cloud Console)
 
 ## Bring up the infrastructure manually
 
-* A few details need to be set in local (ignored by Git) files
-** `.../builders/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
-** `.../builders/user.auto.tfvars:image` - VM image name to be used for builders
-** `.../watchdog/user.auto.tfvars:github_pat` - Personal Access Token that grants access to the game project
+* A few details need to be set in a local (ignored by Git) file, namely `.../services/user.auto.tfvars`:
+** `github_pat` - Personal Access Token that grants access to the engine, game and UE4 GitHub repositories
+** `engine_builder_image` - VM image name to be used for engine builders
+** `game_builder_image` - VM image name to be used for engine builders
 
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `TF_VAR_image=<image_name>`
 * `./submodules/UE4-BuildServices/scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
-* `(cd configurations/<org>/<repo>/engine-storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/game-storage && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/engine-builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/game-builders && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/engine-watchdog && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
-* `(cd configurations/<org>/<repo>/game-watchdog && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
+* `(cd configurations/<org>/<repo>/services && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 
 ## Tear down the infrastructure manually
 
-* `(cd configurations/<org>/<repo>/game-watchdog && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/engine-watchdog && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/game-builders && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/engine-builders && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/game-storage && terraform init --backend-config=../backend.hcl && terraform destroy)`
-* `(cd configurations/<org>/<repo>/engine-storage && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/engine-services && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `gcloud compute images delete <image names beginning with build-agent-*>`
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform destroy)`
