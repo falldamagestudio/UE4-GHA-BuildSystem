@@ -21,6 +21,9 @@ module "engine_builders" {
   runner_name        = var.engine_builder_runner_name
   on_demand          = true
   storage_bucket_ids = [module.engine_storage.storage_bucket_id]
+
+  # Module dependencies
+  module_depends_on  = [module.engine_storage.module_depends_on_output]
 }
 
 module "engine_watchdog" {
@@ -68,6 +71,9 @@ module "game_builders" {
   runner_name        = var.game_builder_runner_name
   on_demand          = true
   storage_bucket_ids = [module.engine_storage.storage_bucket_id, module.game_storage.storage_bucket_id]
+
+  # Module dependencies
+  module_depends_on  = [module.engine_storage.module_depends_on_output, module.game_storage.module_depends_on_output]
 }
 
 module "game_watchdog" {
