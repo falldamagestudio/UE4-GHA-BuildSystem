@@ -6,7 +6,7 @@ engine_storage_bucket_name = "kalmalyzer-ue4-gha-buildsystem-engine-longtail"
 
 # engine_builders
 
-engine_builder_boot_disk_size = "400"
+engine_builder_boot_disk_size = "300"
 engine_builder_github_scope   = "Kalmalyzer/UE4-GHA-Engine"
 engine_builder_machine_type   = "n1-standard-32"
 engine_builder_instance_name  = "engine-build-agent"
@@ -28,7 +28,7 @@ game_storage_bucket_name = "kalmalyzer-ue4-gha-buildsystem-game-longtail"
 
 # game_builders
 
-game_builder_boot_disk_size = "200"
+game_builder_boot_disk_size = "100"
 game_builder_github_scope   = "Kalmalyzer/UE4-GHA-Game"
 game_builder_machine_type   = "n1-standard-32"
 game_builder_instance_name  = "game-build-agent"
