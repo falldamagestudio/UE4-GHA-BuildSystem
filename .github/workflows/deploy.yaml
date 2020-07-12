@@ -41,7 +41,7 @@ jobs:
     name: "Build BuildAgent VM image"
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.build_image.outputs.image_name }}
+      image_name: ${{ steps.build_image.outputs.image_name }}
     steps:
       - uses: actions/checkout@v2
         with:
