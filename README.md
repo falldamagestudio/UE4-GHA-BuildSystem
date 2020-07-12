@@ -10,6 +10,8 @@ This is an automated build system that allows you to build UE4 games, with some 
 
 **You can set up a replica of the build system by forking**. Fork it, do some setup work, and voila! You have a clone of the build system that you can experiment with. Develop in your fork, and send PRs upstream.
 
+See [UE4-GHA-Engine](https://github.com/falldamagestudio/UE4-GHA-Engine) and [UE4-GHA-Game](https://github.com/falldamagestudio/UE4-GHA-Game) for an engine/game combination that uses this to build itself via GitHub Actions.
+
 # Technology
 
 The game and the infrastructure are both kept in GitHub.
@@ -24,7 +26,7 @@ The watchdog service is a Cloud Function, again running in Google Cloud. It is i
 
 # Status
 
-This is a proof-of-concept. It works, but hasn't been used by a team that is actively building a game. See the project issues to get a feeling for what is missing.
+This is a proof-of-concept. It works, but hasn't been used by a team that is actively building a game. See the [project issues](https://github.com/falldamagestudio/UE4-GHA-BuildSystem/issues) to get a feeling for what is missing.
 
 # How to use
 
