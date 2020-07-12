@@ -67,7 +67,7 @@ module "game_builders" {
   instance_name      = var.game_builder_instance_name
   runner_name        = var.game_builder_runner_name
   on_demand          = true
-  storage_bucket_ids = [module.game_storage.storage_bucket_id]
+  storage_bucket_ids = [module.engine_storage.storage_bucket_id, module.game_storage.storage_bucket_id]
 }
 
 module "game_watchdog" {
