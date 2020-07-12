@@ -29,28 +29,25 @@ You will need to do these steps once for the game, and once for each user that i
 * Add a new Service Account to the project. Name it `GitHub Actions Build System`. Grant it the Project Owner role.
 * Create a key for the service account, in JSON format. Hold on to it for the GitHub setup step.
 
-
-## GitHub repository setup
+## GitHub setup
 
 First, make sure you have created a repository & GitHub user for your organization if you haven't done so already:
 
-* Fork (if you want it public) or [Import](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) (if you want it private) this repository to your company's GitHub organization, renaming it to `<org>/<your game>-BuildSystem`.
+* Fork (if you want it public) or [Import](https://help.github.com/en/github/importing-your-projects-to-github/importing-a-repository-with-github-importer) (if you want it private) this repository to your company's GitHub organization, renaming it to `<org>/<your game>-BuildSystem`. Repeat the process for [https://github.com/falldamagestudio/UE4-GHA-Engine](UE4-GHA-Engine) and [https://github.com/falldamagestudio/UE4-GHA-Game](UE4-GHA-Game).
 
-* Create a new GitHub account. GitHub Actions will use this account on behalf of your organization. Name it something like `<org>-<your game>-buildsystem`. Give it read-only access to `<org>/<your game>`.
+* Ensure you have a fork/import of Unreal Engine.
 
-Then, if you are going to work on the build system yourself:
+* Create a new GitHub account. GitHub Actions will use this account on behalf of your organization. Name it something like `<org>-<your game>-buildsystem`. Give it read-only access to our Unreal Engine repository, `<org>/<your game>-Engine` and `<org>/<your game>-Game`.
 
-* Fork the `<org>/<your game>-BuildSystem` repository to your local GitHub user.
+* Create a Personal Access Token for the GitHub Account (either build system account or your personal account), with name `Access Token for GitHub Actions in <org>/<your game>` and scopes `admin:repo_hook`, `repo`, `workflow`.
 
-Either way, it is time to do some configuration of the repository:
+## BuildSystem GitHub repo setup
 
-* Locate the key that you created for the `GitHub Actions Build System` account. Add a new secret to the GitHub repository, with name `GCP_SERVICE_ACCOUNT_CREDENTIALS` and the contents of the key file as its value.
+* Locate the key that you created for the `GitHub Actions Build System` service account. Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with name `GCP_SERVICE_ACCOUNT_CREDENTIALS` and the contents of the key file as its value.
 
-* Create a Personal Access Token for the GitHub Account (either build system account or your personal account), with name `Access Token for GitHub Actions in <org>/<your game>` and scopes `admin:repo_hook`, `repo`, `workflow`. Add a new secret to the GitHub repository, with name `ENGINE_AND_GAME_GITHUB_PAT` and the Personal Access Token string as its value.
+Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with name `ENGINE_AND_GAME_GITHUB_PAT` and the Personal Access Token string named `Access Token for GitHub Actions in <org>/<your game>` as its value.
 
-## Terraform setup
-
-* Check out the `<your game>-BuildSystem` repository.
+* Check out the `<org>/<your game>-BuildSystem` repository.
 * Duplicate `configurations/falldamagestudio/UE4-GHA-Game-BuildSystem` and name the folder `configurations/<org>/<repo>/<your game>-BuildSystem`, according to your git repo name
 * Modify `configurations/<org>/<repo>/<your game>-BuildSystem/backend.hcl` to point to the state bucket
 * Modify `configurations/<org>/<repo>/<your game>-BuildSystem/*/terraform.tfvars` files, and ensure that all elements have up-to-date names; see the corresponding `variables.tf` files for details
@@ -61,17 +58,53 @@ Either way, it is time to do some configuration of the repository:
 ## Engine GitHub repo setup
 
 * Add some secrets to your engine repository:
-* `ENGINE_GITHUB_PAT` - the GitHub Personal Access token that will be used to access the Engine + the UE4 repo
+* `ENGINE_GITHUB_PAT` - the GitHub Personal Access token that you have created
 * `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI, or via doing `terraform show` on the `services` project
-* `GCP_ENGINE_BUILD_AGENT_CREDENTIALS` - credentials for the `engine-build-agent@...` Service Account (you will create these manually via the GCP Cloud Console)
+* `GCP_ENGINE_BUILD_AGENT_CREDENTIALS` - credentials for the `engine-build-agent@...` Service Account (you will need to create these manually via the GCP Cloud Console first)
+
+* Check out the `<org>/<your game>-Engine` repository.
+* Change the `UE4` submodule to point to a suitable commit within your own Unreal Engine repository.
+* Change `UploadUE4/online_configuration.json` to refer to storage buckets created by your fork of the build system.
+* Commit & push the changes. GitHub Actions will build an engine version for you.
+
+* View the workflow run in GitHub Actions, and note down the identifier used when uploading the engine build; it will be on the format `engine-<SHA1>-win64`. You will need to update the game repo to refer to this.
 
 ## Game GitHub repo setup
 
 * Add some secrets to your game repository:
 * `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI, or via doing `terraform show` on the `services` project
-* `GCP_GAME_BUILD_AGENT_CREDENTIALS` - credentials for `game-build-agent@...` Service Account (you will create these manually via the GCP Cloud Console)
+* `GCP_GAME_BUILD_AGENT_CREDENTIALS` - credentials for `game-build-agent@...` Service Account (you will need to create these manually via the GCP Cloud Console first)
+
+* Check out the `<org>/<your game>-Game` repository.
+* Change `UpdateUE4/desired_version.json` to refer to the recently-built UE4 version.
+* Change `UpdateUE4/online_configuration.json` to refer to storage buckets created by your fork of the build system.
+* Commit & push the changes. GitHub Actions will build a game for you.
+
+# Daily usage
+
+## Update the game
+
+* Push new commits to `<org>/<your game>-Game`. These will be built automatically.
+
+## Update the engine
+
+* Push new commits to your Unreal Engine repository.
+* Change the submodule reference in `<org>/<your game>-Engine`.
+* Wait for the new engine version to build.
+* Update `UpdateUE4/desired_version.json` within `<org>/<your game>-Game`.
+* Wait for the game to build.
+
+
+
+# Developing on the build system
+
+You can get a personal, full replica of the entire build system. This allows you to test out build system changes in a safe environment before you roll them out for your entire team. To make this happen, you need to fork `<org>/<your game>-BuildSystem`, `<org>/<your game>-Engine` and `<org>/<your game>-Game`. Create a new Google Cloud project. Use your personal account instead of the GitHub service account that was created for your organization. Duplicate the configuration within `<org>/<your game>-BuildSystem/configurations`.
+
+You will need to go through most of the above one-time setup steps, but for your personal forks.
 
 ## Bring up the infrastructure manually
+
+You can perform the terraform operations from your local machine. Since the Terraform state is kept in a GCS bucket, this will not cause conflicts.
 
 * A few details need to be set in a local (ignored by Git) file, namely `.../services/user.auto.tfvars`:
 ** `github_pat` - Personal Access Token that grants access to the engine, game and UE4 GitHub repositories
@@ -84,6 +117,8 @@ Either way, it is time to do some configuration of the repository:
 * `(cd configurations/<org>/<repo>/services && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 
 ## Tear down the infrastructure manually
+
+You can go into the GCP Cloud Console and delete resources ... or, you can use Terraform locally:
 
 * `(cd configurations/<org>/<repo>/engine-services && terraform init --backend-config=../backend.hcl && terraform destroy)`
 * `gcloud compute images delete <image names beginning with build-agent-*>`
