@@ -61,10 +61,10 @@ Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with 
 * `ENGINE_GITHUB_PAT` - the GitHub Personal Access token that you have created
 * `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI, or via doing `terraform show` on the `services` project
 * `GCP_ENGINE_BUILD_AGENT_CREDENTIALS` - credentials for the `engine-build-agent@...` Service Account (you will need to create these manually via the GCP Cloud Console first)
+* `ENGINE_STORAGE_BUCKET_NAME` - the value of `engine_storage_bucket_name` from `terraform.tfvars`
 
 * Check out the `<org>/<your game>-Engine` repository.
 * Change the `UE4` submodule to point to a suitable commit within your own Unreal Engine repository.
-* Change `UploadUE4/online_configuration.json` to refer to storage buckets created by your fork of the build system.
 * Commit & push the changes. GitHub Actions will build an engine version for you.
 
 * View the workflow run in GitHub Actions, and note down the identifier used when uploading the engine build; it will be on the format `engine-<SHA1>-win64`. You will need to update the game repo to refer to this.
@@ -74,10 +74,11 @@ Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with 
 * Add some secrets to your game repository:
 * `WATCHDOG_TRIGGER_URL` - HTTPS trigger URL for the watchdog Cloud Function; you can find this either via the Google Cloud web UI, or via doing `terraform show` on the `services` project
 * `GCP_GAME_BUILD_AGENT_CREDENTIALS` - credentials for `game-build-agent@...` Service Account (you will need to create these manually via the GCP Cloud Console first)
+* `ENGINE_STORAGE_BUCKET_NAME` - the value of `engine_storage_bucket_name` from `terraform.tfvars`
+* `GAME_STORAGE_BUCKET_NAME` - the value of `game_storage_bucket_name` from `terraform.tfvars`
 
 * Check out the `<org>/<your game>-Game` repository.
 * Change `UpdateUE4/desired_version.json` to refer to the recently-built UE4 version.
-* Change `UpdateUE4/online_configuration.json` to refer to storage buckets created by your fork of the build system.
 * Commit & push the changes. GitHub Actions will build a game for you.
 
 # Daily usage
