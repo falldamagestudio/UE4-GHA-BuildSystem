@@ -45,7 +45,7 @@ First, make sure you have created a repository & GitHub user for your organizati
 
 * Locate the key that you created for the `GitHub Actions Build System` service account. Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with name `GCP_SERVICE_ACCOUNT_CREDENTIALS` and the contents of the key file as its value.
 
-Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with name `ENGINE_AND_GAME_GITHUB_PAT` and the Personal Access Token string named `Access Token for GitHub Actions in <org>/<your game>` as its value.
+* Add a new secret to the `<org>/<your game>-BuildSystem` GitHub repository, with name `ENGINE_AND_GAME_GITHUB_PAT` and the Personal Access Token string named `Access Token for GitHub Actions in <org>/<your game>` as its value.
 
 * Check out the `<org>/<your game>-BuildSystem` repository.
 * Duplicate `configurations/falldamagestudio/UE4-GHA-Game-BuildSystem` and name the folder `configurations/<org>/<repo>/<your game>-BuildSystem`, according to your git repo name
@@ -110,7 +110,7 @@ You can perform the terraform operations from your local machine. Since the Terr
 * A few details need to be set in a local (ignored by Git) file, namely `.../services/user.auto.tfvars`:
 ** `github_pat` - Personal Access Token that grants access to the engine, game and UE4 GitHub repositories
 ** `engine_builder_image` - VM image name to be used for engine builders
-** `game_builder_image` - VM image name to be used for engine builders
+** `game_builder_image` - VM image name to be used for game builders
 
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `TF_VAR_image=<image_name>`
@@ -121,6 +121,6 @@ You can perform the terraform operations from your local machine. Since the Terr
 
 You can go into the GCP Cloud Console and delete resources ... or, you can use Terraform locally:
 
-* `(cd configurations/<org>/<repo>/engine-services && terraform init --backend-config=../backend.hcl && terraform destroy)`
+* `(cd configurations/<org>/<repo>/services && terraform init --backend-config=../backend.hcl && terraform destroy)`
 * `gcloud compute images delete <image names beginning with build-agent-*>`
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform destroy)`
