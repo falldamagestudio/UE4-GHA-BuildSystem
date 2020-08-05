@@ -1,4 +1,10 @@
+name: Create/update infrastructure
+
 on:
+  # Allow users to trigger workflow manually via GitHub UI
+  workflow_dispatch:
+
+  # Run on all pushes
   push:
     branches:
       - '**'
