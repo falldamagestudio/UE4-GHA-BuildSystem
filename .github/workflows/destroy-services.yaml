@@ -1,0 +1,37 @@
+name: Destroy services
+
+on:
+  # Allow users to trigger workflow manually via GitHub UI
+  workflow_dispatch:
+
+env:
+  TF_IN_AUTOMATION: 1
+  TF_INPUT: 0
+  TF_CLI_ARGS_apply: "-auto-approve"
+  GOOGLE_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
+  TERRAFORM_VERSION: "0.12.28"
+
+jobs:
+  avoid_concurrent_invocations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  destroy_services:
+    needs: [ avoid_concurrent_invocations ]
+    name: "Destroy services"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Destroy services"
+        run: cd configurations/${{ github.repository }}/services && terraform init -backend-config=../backend.hcl && terraform destroy
