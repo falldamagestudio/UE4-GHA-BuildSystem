@@ -7,7 +7,7 @@ on:
 env:
   TF_IN_AUTOMATION: 1
   TF_INPUT: 0
-  TF_CLI_ARGS_apply: "-auto-approve"
+  TF_CLI_ARGS_destroy: "-auto-approve"
   GOOGLE_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
   TERRAFORM_VERSION: "0.12.28"
 
