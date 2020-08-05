@@ -34,10 +34,11 @@ jobs:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: "Destroy services"
-        export TF_VAR_github_pat=${{ secrets.ENGINE_AND_GAME_GITHUB_PAT }}
-        export TF_VAR_engine_builder_image="none"
-        export TF_VAR_game_builder_image="none"
-        run: cd configurations/${{ github.repository }}/services && terraform init -backend-config=../backend.hcl && terraform destroy
+        run: |
+          export TF_VAR_github_pat=${{ secrets.ENGINE_AND_GAME_GITHUB_PAT }}
+          export TF_VAR_engine_builder_image="none"
+          export TF_VAR_game_builder_image="none"
+          cd configurations/${{ github.repository }}/services && terraform init -backend-config=../backend.hcl && terraform destroy
 
   destroy_project:
     needs: [ destroy_services ]
