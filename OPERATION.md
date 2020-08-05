@@ -95,15 +95,13 @@ First, make sure you have created a repository & GitHub user for your organizati
 * Update `UpdateUE4/desired_version.json` within `<org>/<your game>-Game`.
 * Wait for the game to build.
 
-
-
 # Developing on the build system
 
 You can get a personal, full replica of the entire build system. This allows you to test out build system changes in a safe environment before you roll them out for your entire team. To make this happen, you need to fork `<org>/<your game>-BuildSystem`, `<org>/<your game>-Engine` and `<org>/<your game>-Game`. Create a new Google Cloud project. Use your personal account instead of the GitHub service account that was created for your organization. Duplicate the configuration within `<org>/<your game>-BuildSystem/configurations`.
 
 You will need to go through most of the above one-time setup steps, but for your personal forks.
 
-## Bring up the infrastructure manually
+## Bring up the infrastructure from command line
 
 You can perform the terraform operations from your local machine. Since the Terraform state is kept in a GCS bucket, this will not cause conflicts.
 
@@ -117,10 +115,15 @@ You can perform the terraform operations from your local machine. Since the Terr
 * `./submodules/UE4-BuildServices/scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
 * `(cd configurations/<org>/<repo>/services && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 
-## Tear down the infrastructure manually
+## Tear down the infrastructure from command line
 
-You can go into the GCP Cloud Console and delete resources ... or, you can use Terraform locally:
+You can use Terraform locally:
 
 * `(cd configurations/<org>/<repo>/services && terraform init --backend-config=../backend.hcl && terraform destroy)`
 * `gcloud compute images delete <image names beginning with build-agent-*>`
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform destroy)`
+
+## Tear down the infrastructure via UI
+
+* Run the "Destroy services" workflow via Github Actions
+* Remove any lingering images in the project via Google Cloud's web GUI
