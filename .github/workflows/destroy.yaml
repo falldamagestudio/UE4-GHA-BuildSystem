@@ -1,4 +1,4 @@
-name: Destroy services
+name: Destroy infrastructure
 
 on:
   # Allow users to trigger workflow manually via GitHub UI
@@ -38,3 +38,19 @@ jobs:
         export TF_VAR_engine_builder_image=${{ needs.build_buildagent_image.outputs.image_name }}
         export TF_VAR_game_builder_image=${{ needs.build_buildagent_image.outputs.image_name }}
         run: cd configurations/${{ github.repository }}/services && terraform init -backend-config=../backend.hcl && terraform destroy
+
+  destroy_project:
+    needs: [ destroy_services ]
+    name: "Destroy project"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: "Destroy project"
+        run: cd configurations/${{ github.repository }}/project && terraform init -backend-config=../backend.hcl && terraform destroy

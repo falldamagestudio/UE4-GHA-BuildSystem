@@ -125,5 +125,5 @@ You can use Terraform locally:
 
 ## Tear down the infrastructure via UI
 
-* Run the "Destroy services" workflow via Github Actions
+* Run the "Destroy infrastructure" workflow via Github Actions
 * Remove any lingering images in the project via Google Cloud's web GUI
