@@ -6,7 +6,7 @@ This is an automated build system that allows you to build UE4 games, with some 
 
 **It uses 100% cloud-based services and hardware**. There is no need to manage physical machines. You can test what happens to your build times when you move to a 96-vCPU machine easily.
 
-**Build agents are stopped when not in use**. You pay for storage 24/7, but compute is only billed when agents are running. The build system for an example game costs approximately $1/day when idle.
+**Build agents are stopped when not in use**. You pay for storage 24/7, but compute is only billed when agents are running. The build system for an example game costs approximately $70/month when idle and $170/month for a tiny development team (see [cost estimation](https://docs.google.com/spreadsheets/d/1DrYU_NA2Wwc8I3487ggpIlFdwStyohGpDkj04EooBAs/edit?usp=sharing)).
 
 **You can set up a replica of the build system by forking**. Fork it, do some setup work, and voila! You have a clone of the build system that you can experiment with. Develop in your fork, and send PRs upstream.
 
