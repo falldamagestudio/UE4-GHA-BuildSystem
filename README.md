@@ -31,3 +31,7 @@ This is a proof-of-concept. It works, but hasn't been used by a team that is act
 # How to use
 
 See [OPERATION.md](OPERATION.md) for usage instructions.
+
+# Further reading
+
+Here is [a blog post](https://blog.falldamagestudio.com/posts/building-unreal-engine-with-github-actions/) that goes into more detail about the build system.
