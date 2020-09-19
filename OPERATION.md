@@ -37,7 +37,7 @@ First, make sure you have created a repository & GitHub user for your organizati
 
 * Ensure you have a fork/import of Unreal Engine.
 
-* Create a new GitHub account. GitHub Actions will use this account on behalf of your organization. Name it something like `<org>-<your game>-buildsystem`. Give it read-only access to our Unreal Engine repository, `<org>/<your game>-Engine` and `<org>/<your game>-Game`.
+* Create a new GitHub account. GitHub Actions will use this account on behalf of your organization. Name it something like `<org>-<your game>-buildsystem`. Give it admin access to your Unreal Engine repository, `<org>/<your game>-Engine` and `<org>/<your game>-Game`.
 
 * Create a Personal Access Token for the GitHub Account (either build system account or your personal account), with name `Access Token for GitHub Actions in <org>/<your game>` and scopes `admin:repo_hook`, `repo`, `workflow`.
 
