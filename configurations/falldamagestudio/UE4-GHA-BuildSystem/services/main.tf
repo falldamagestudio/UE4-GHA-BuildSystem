@@ -16,6 +16,7 @@ module "engine_builders" {
   github_pat         = var.github_pat
   image              = var.engine_builder_image
   machine_type       = var.engine_builder_machine_type
+  boot_disk_type     = var.engine_builder_boot_disk_type
   boot_disk_size     = var.engine_builder_boot_disk_size
   instance_name      = var.engine_builder_instance_name
   runner_name        = var.engine_builder_runner_name
@@ -66,6 +67,7 @@ module "game_builders" {
   github_pat         = var.github_pat
   image              = var.game_builder_image
   machine_type       = var.game_builder_machine_type
+  boot_disk_type     = var.game_builder_boot_disk_type
   boot_disk_size     = var.game_builder_boot_disk_size
   instance_name      = var.game_builder_instance_name
   runner_name        = var.game_builder_runner_name

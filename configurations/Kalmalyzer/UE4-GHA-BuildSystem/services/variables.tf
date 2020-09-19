@@ -33,6 +33,12 @@ variable "engine_builder_machine_type" {
   default     = "n1-standard-4"
 }
 
+variable "engine_builder_boot_disk_type" {
+  description = "Type of boot disk to use when creating the engine builder VM. See https://cloud.google.com/compute/docs/disks#disk-types for available disk types."
+  type        = string
+  default     = "pd-ssd"
+}
+
 variable "engine_builder_boot_disk_size" {
   description = "Size of boot disk, in GB, to use when creating the engine builder VM."
   type        = number
@@ -100,6 +106,12 @@ variable "game_builder_machine_type" {
   description = "GCE instance machine type to use when creating the game builder VM. See https://cloud.google.com/compute/docs/machine-types for available machine types."
   type        = string
   default     = "n1-standard-4"
+}
+
+variable "game_builder_boot_disk_type" {
+  description = "Type of boot disk to use when creating the game builder VM. See https://cloud.google.com/compute/docs/disks#disk-types for available disk types."
+  type        = string
+  default     = "pd-ssd"
 }
 
 variable "game_builder_boot_disk_size" {
