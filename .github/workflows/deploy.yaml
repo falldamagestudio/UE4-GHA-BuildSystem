@@ -63,7 +63,7 @@ jobs:
         id: build_image
         run: |
 
-          TEMPLATE_FILE=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json
+          TEMPLATE_FILE=${{ github.workspace }}/submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.pkr.hcl
           VARIABLE_FILE=${{ github.workspace }}/configurations/${{ github.repository }}/build-agent-image/vars.json
 
           TEMPLATE_FOLDER=`dirname "${TEMPLATE_FILE}"`
