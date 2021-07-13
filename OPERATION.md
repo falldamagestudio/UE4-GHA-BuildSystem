@@ -83,6 +83,12 @@ First, make sure you have created a repository & GitHub user for your organizati
 
 # Daily usage
 
+## Fetch the game and run UE locally
+
+* Fetch `<org>/<your game>-Game` to your machine.
+* Run `UpdateUE4.bat`. This will download a pre-built UE4 version if necessary.
+* Run `StartEditor.bat` to open the game in Unreal Editor.
+
 ## Update the game
 
 * Push new commits to `<org>/<your game>-Game`. These will be built automatically.
