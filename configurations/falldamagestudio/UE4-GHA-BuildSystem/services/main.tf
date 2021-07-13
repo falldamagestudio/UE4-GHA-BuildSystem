@@ -1,14 +1,14 @@
 
 module "engine_storage" {
 
-  source = "../../../../submodules/UE4-BuildServices/services/storage"
+  source = "../../../../submodules/UE4-GHA-BuildServices/services/storage"
 
   location = data.terraform_remote_state.project.outputs.region
   name     = var.engine_storage_bucket_name
 }
 
 module "engine_builders" {
-  source = "../../../../submodules/UE4-BuildServices/services/builders"
+  source = "../../../../submodules/UE4-GHA-BuildServices/services/builders"
 
   resource_name_prefix = "engine"
 
@@ -28,7 +28,7 @@ module "engine_builders" {
 }
 
 module "engine_watchdog" {
-  source = "../../../../submodules/UE4-BuildServices/services/watchdog"
+  source = "../../../../submodules/UE4-GHA-BuildServices/services/watchdog"
 
   source_path = "../../../../submodules/UE4-GHA-BuildAgentWatchdog"
 
@@ -52,14 +52,14 @@ module "engine_watchdog" {
 
 module "game_storage" {
 
-  source = "../../../../submodules/UE4-BuildServices/services/storage"
+  source = "../../../../submodules/UE4-GHA-BuildServices/services/storage"
 
   location = data.terraform_remote_state.project.outputs.region
   name     = var.game_storage_bucket_name
 }
 
 module "game_builders" {
-  source = "../../../../submodules/UE4-BuildServices/services/builders"
+  source = "../../../../submodules/UE4-GHA-BuildServices/services/builders"
 
   resource_name_prefix = "game"
 
@@ -79,7 +79,7 @@ module "game_builders" {
 }
 
 module "game_watchdog" {
-  source = "../../../../submodules/UE4-BuildServices/services/watchdog"
+  source = "../../../../submodules/UE4-GHA-BuildServices/services/watchdog"
 
   source_path = "../../../../submodules/UE4-GHA-BuildAgentWatchdog"
 

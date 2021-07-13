@@ -4,6 +4,6 @@
 [submodule "submodules/UE4-GHA-BuildAgentWatchdog"]
 	path = submodules/UE4-GHA-BuildAgentWatchdog
 	url = https://github.com/falldamagestudio/UE4-GHA-BuildAgentWatchdog
-[submodule "submodules/UE4-BuildServices"]
-	path = submodules/UE4-BuildServices
-	url = https://github.com/falldamagestudio/UE4-BuildServices
+[submodule "submodules/UE4-GHA-BuildServices"]
+	path = submodules/UE4-GHA-BuildServices
+	url = https://github.com/falldamagestudio/UE4-GHA-BuildServices

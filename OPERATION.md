@@ -112,7 +112,7 @@ You can perform the terraform operations from your local machine. Since the Terr
 
 * `(cd configurations/<org>/<repo>/project && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 * `TF_VAR_image=<image_name>`
-* `./submodules/UE4-BuildServices/scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
+* `./submodules/UE4-GHA-BuildServices/scripts/build-packer-image.sh submodules/UE4-GHA-BuildAgent/UE4-GCE-Win64-Git-GitHubActions-MSVC.json configurations/<org>/<repo>/build-agent-image/vars.json $TF_VAR_image`
 * `(cd configurations/<org>/<repo>/services && terraform init --backend-config=../backend.hcl && terraform plan && terraform apply)`
 
 ## Tear down the infrastructure from command line
