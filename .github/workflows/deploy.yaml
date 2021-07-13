@@ -4,10 +4,10 @@ on:
   # Allow users to trigger workflow manually via GitHub UI
   workflow_dispatch:
 
-  # Run on all pushes
+  # Automatically run on pushes to master branch
   push:
     branches:
-      - '**'
+      - 'master'
 
 env:
   TF_IN_AUTOMATION: 1
