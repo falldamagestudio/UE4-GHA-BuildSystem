@@ -45,7 +45,7 @@ The example engine/game repos do not include any LFS content. If your game proje
 
 ```
 
-## Users encounter VS2910 version mismatches when building game locally
+## Users encounter VS2019 version mismatches when building game locally
 
 The build agent will install and use the latest version of VS2019 that is available at the time that the VM image is created. That VS2019 version will be used when creating pre-built Engine versions.
 
