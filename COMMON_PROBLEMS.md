@@ -42,4 +42,22 @@ The example engine/game repos do not include any LFS content. If your game proje
 
       - name: Checkout LFS objects
         run: git lfs checkout
+
 ```
+
+## Users encounter VS2910 version mismatches when building game locally
+
+The build agent will install and use the latest version of VS2019 that is available at the time that the VM image is created. That VS2019 version will be used when creating pre-built Engine versions.
+
+If users attempt to use that pre-built Engine version on a machine that has an older VS2019 version, they are likely to encounter compile/link errors. The easiest way around this is to ensure that users update to the latest VS2019 version.
+
+It should also be possible to use older VS2019 versions in the build agents - but that has not yet been implemented.
+
+## Self-hosted runners disappear after long periods of inactivity
+
+GitHub Actions will automatically 'forget' any self-hosted runner that hasn't connected to the backend in 30 days. Once GHA has forget the runners for a particular label, builds that need runners for that label will fail immediately.
+
+To get around this, start your runners manually after they have disappeared.
+
+Also see #15.
+
